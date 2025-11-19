@@ -1,0 +1,104 @@
+{
+  "title": "Nexus Water — XRPL RWA Enviro Assets DEX (v0)",
+  "elevator": "Build a Web3 app on XRPL that mints, trades, and retires environmental RWAs as MPT tokens. Core assets: $WTR (water-savings micro carbon credits) and $ENG (energy-savings micro carbon credits). Tokens are transferable, burnable, and clawback-enabled for compliant retirement. Credits derive from real tech (solar, AWGs, greywater recycling, filters/pumps, rainwater systems). Swap against other tokenized RWAs (fractionalized real estate, loans).",
+  "chain": {
+    "network": "XRPL Mainnet",
+    "dex": "XRPL DEX/AMM",
+    "token_standard": "MPT (Multipurpose Token)"
+  },
+  "carbon_pegs_v0": {
+    "WTR_co2e_g_per_L": 77,
+    "ENG_co2e_g_per_kWh": "{co2e_per_kwh_g}"
+  },
+  "user_roles": [
+    "Participants: connect wallet, verify device/data source, mint $WTR/$ENG, trade or retire.",
+    "Issuers/Integrators: onboard devices (AWG, solar, GWR, filters/pumps, rainwater) and push verified data.",
+    "Oracles/Verifiers: sign readings (kWh, liters, timestamps, device IDs, region).",
+    "Auditors: view provenance, retirement registry, batch lineage.",
+    "Market Makers: provide AMM liquidity ($WTR/XRP, $ENG/XRP, RWA pairs)."
+  ],
+  "features_mvp": [
+    "Wallet connect (Xaman + XRPL address paste).",
+    "Mint: $WTR/$ENG from verified IoT/API/oracle readings.",
+    "Trade: AMM quotes & swaps ($WTR↔XRP, $ENG↔XRP, $WTR/$ENG↔RWA assets).",
+    "Retire: burn with on-chain memo + public retirement registry.",
+    "Batch Explorer: short metadata per batch (region, tech, vintage, peg, verifier, device hash).",
+    "RWA Swap Hooks: list eligible fractionalized real estate/loan markets."
+  ],
+  "compliance_controls": [
+    "Clawback flag at issuance (issuer-only, for fraud/compliance).",
+    "Retirement = burn + memo format 'RETIRE:<ASSET>:<batchId>:<region>:<ISO-date>'.",
+    "No double counting: unique batch IDs, oracle signature required, prevent remint of retired batches.",
+    "Region codes ISO-3166-2 stored in metadata; peg constants per batch."
+  ],
+  "screens": [
+    "Home/Connect: 'Mint, trade, retire environmental assets on XRPL.'",
+    "Mint: choose asset → pick verified device → set period → preview batch metadata → Mint.",
+    "Trade: AMM quote with slippage guard → execute.",
+    "Retire: select batch → burn → get retirement certificate link.",
+    "Explorer: search by batch ID, region, tech, vintage; view proofs and oracle signature.",
+    "Profile: balances, kgCO2e avoided, retired history, device status."
+  ],
+  "data_flow_mvp": "IoT/API readings → Oracle verifies/signs → App computes credits (L or kWh) × peg (77 g/L or region g/kWh) → MPT mint per batch → Trade/Retire → Registry updates.",
+  "success_criteria": [
+    "<3 clicks to mint after verification.",
+    "Visible on-chain retirement proof link per batch.",
+    "AMM swap completes in one flow with slippage guard.",
+    "Batch page shows region, tech, vintage, oracle, peg constants, and device hash."
+  ],
+  "out_of_scope_v0": [
+    "Fiat on-ramps.",
+    "Multi-chain bridges.",
+    "Advanced order types/derivatives."
+  ],
+  "design": {
+    "theme": "Dark UI",
+    "accent_hex": "#25D695",
+    "font_pref": "Sora or Inter",
+    "components": "Simple cards, region/tech chips, clear 'Retire' CTA"
+  },
+  "mpt_examples": {
+    "WTR_batch": {
+      "t": "NXS-WTR",
+      "n": "WTR-PA-HNL-2025-000123",
+      "d": "Water-savings micro credit (AWG/GWR) - Honolulu",
+      "ac": "env",
+      "as": "micro_carbon_credit",
+      "in": "Nexus Water",
+      "i": "ipfs://{preview_or_icon}",
+      "u": "https://nexuswater.xyz/registry/WTR-PA-HNL-2025-000123",
+      "region": "US-HI",
+      "tech": ["AWG","GWR"],
+      "vintage": "2025-11",
+      "unit": "L",
+      "qty_unit": 1000,
+      "peg_co2e_g_per_L": 77,
+      "oracle_pubkey": "ED25519:{pubkey}",
+      "device_hash": "sha256:{hash}",
+      "issuer_clawback": true,
+      "retire_policy": "burn+memo",
+      "memo": "batch"
+    },
+    "ENG_batch": {
+      "t": "NXS-ENG",
+      "n": "ENG-PA-SF-2025-000987",
+      "d": "Energy-savings micro credit (Solar) - San Francisco",
+      "ac": "env",
+      "as": "micro_carbon_credit",
+      "in": "Nexus Water",
+      "i": "ipfs://{preview_or_icon}",
+      "u": "https://nexuswater.xyz/registry/ENG-PA-SF-2025-000987",
+      "region": "US-CA",
+      "tech": ["SOLAR"],
+      "vintage": "2025-11",
+      "unit": "kWh",
+      "qty_unit": 250,
+      "peg_co2e_g_per_kWh": "{co2e_per_kwh_g}",
+      "oracle_pubkey": "ED25519:{pubkey}",
+      "device_hash": "sha256:{hash}",
+      "issuer_clawback": true,
+      "retire_policy": "burn+memo",
+      "memo": "batch"
+    }
+  }
+}
