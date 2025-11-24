@@ -15,6 +15,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Progress } from "@/components/ui/progress";
+import offsetNftImage from "@assets/generated_images/holographic_3d_crystal_badge_representing_a_carbon_offset_credit_on_blockchain.png";
 
 export default function Retire() {
   const [retiredBatches, setRetiredBatches] = useState<string[]>([]);
@@ -144,12 +145,48 @@ export default function Retire() {
                         <Flame className="w-4 h-4 mr-2" /> Retire / Burn
                       </Button>
                     </AlertDialogTrigger>
-                    <AlertDialogContent className="bg-card border-white/10">
+                    <AlertDialogContent className="bg-card border-white/10 sm:max-w-[500px]">
                       <AlertDialogHeader>
                         <AlertDialogTitle>Confirm Retirement</AlertDialogTitle>
                         <AlertDialogDescription>
-                          This action will permanently burn <strong>{batch.amount} {batch.type}</strong> tokens from your wallet.
-                          This action cannot be undone. A retirement certificate will be minted on-chain.
+                          <div className="space-y-4 pt-2">
+                            <p>You are about to permanently burn <strong>{batch.amount} {batch.type}</strong>.</p>
+                            
+                            <div className="p-4 rounded-lg bg-black/40 border border-white/10 space-y-3">
+                              <div className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Rewards Preview</div>
+                              <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-3">
+                                  <div className="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-400">
+                                    <Coins className="w-4 h-4" />
+                                  </div>
+                                  <div>
+                                    <div className="font-bold text-white">50.00 NXS</div>
+                                    <div className="text-xs text-muted-foreground">Governance Token</div>
+                                  </div>
+                                </div>
+                                <div className="text-right text-xs text-emerald-400">+ Utility Value</div>
+                              </div>
+
+                              <div className="h-px bg-white/10" />
+
+                              <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-3">
+                                  <div className="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-400">
+                                    <CheckCircle2 className="w-4 h-4" />
+                                  </div>
+                                  <div>
+                                    <div className="font-bold text-white">Offset NFT</div>
+                                    <div className="text-xs text-muted-foreground">Proof of Impact</div>
+                                  </div>
+                                </div>
+                                <div className="text-right text-xs text-blue-400">Minted to Wallet</div>
+                              </div>
+                            </div>
+
+                            <p className="text-xs text-muted-foreground">
+                              This action is irreversible. The NFT serves as your on-chain proof of environmental offset.
+                            </p>
+                          </div>
                         </AlertDialogDescription>
                       </AlertDialogHeader>
                       <AlertDialogFooter>
@@ -158,7 +195,7 @@ export default function Retire() {
                           onClick={() => handleRetire(batch.id)}
                           className="bg-destructive text-white hover:bg-destructive/90"
                         >
-                          Confirm Burn
+                          Confirm Burn & Mint NFT
                         </AlertDialogAction>
                       </AlertDialogFooter>
                     </AlertDialogContent>
@@ -178,18 +215,27 @@ export default function Retire() {
                 const batch = MOCK_BATCHES.find(b => b.id === id);
                 if (!batch) return null;
                 return (
-                  <div key={id} className="flex items-center justify-between p-4 rounded-lg bg-white/5 border border-white/10">
-                    <div className="flex items-center gap-4">
-                      <div className="p-2 rounded-full bg-green-500/20 text-green-400">
-                        <CheckCircle2 className="w-5 h-5" />
+                  <div key={id} className="flex flex-col md:flex-row md:items-center gap-6 p-4 rounded-xl bg-white/5 border border-white/10 overflow-hidden relative group">
+                    <div className="w-16 h-16 rounded-lg overflow-hidden border border-white/10 shadow-[0_0_15px_rgba(37,214,149,0.15)] flex-shrink-0 bg-black">
+                      <img src={offsetNftImage} alt="Offset NFT" className="w-full h-full object-cover" />
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        <h3 className="font-bold text-lg text-white">{batch.name}</h3>
+                        <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/20 uppercase tracking-wide flex items-center gap-1">
+                          <CheckCircle2 className="w-3 h-3" /> Verified Offset
+                        </span>
                       </div>
-                      <div>
-                        <div className="font-bold">{batch.name}</div>
-                        <div className="text-xs text-muted-foreground font-mono">{batch.id}</div>
+                      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted-foreground font-mono">
+                         <span className="text-white">{batch.amount} {batch.type} Burnt</span>
+                         <span className="text-white/20">•</span>
+                         <span>ID: {id}</span>
+                         <span className="text-white/20">•</span>
+                         <span className="text-emerald-400">+ 50 NXS Earned</span>
                       </div>
                     </div>
-                    <Button variant="ghost" size="sm" className="text-primary hover:text-primary/80">
-                      View Certificate <ExternalLink className="ml-2 w-3 h-3" />
+                    <Button variant="outline" className="border-white/10 hover:bg-white/10 hover:text-primary hover:border-primary/30 transition-all">
+                       View NFT Proof <ExternalLink className="ml-2 w-3 h-3" />
                     </Button>
                   </div>
                 )
