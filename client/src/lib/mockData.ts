@@ -16,6 +16,7 @@ export interface Batch {
   status: "Minted" | "Retired" | "Trading";
   deviceHash: string;
   oracle: string;
+  source: string; // New field for grouping
 }
 
 export const MOCK_BATCHES: Batch[] = [
@@ -34,7 +35,8 @@ export const MOCK_BATCHES: Batch[] = [
     verified: true,
     status: "Minted",
     deviceHash: "sha256:a1b2c3...",
-    oracle: "Nexus Oracle Node 1"
+    oracle: "Nexus Oracle Node 1",
+    source: "Honolulu Municipal Water"
   },
   {
     id: "ENG-PA-SF-2025-000987",
@@ -46,12 +48,13 @@ export const MOCK_BATCHES: Batch[] = [
     vintage: "2025-11",
     unit: "kWh",
     amount: 250,
-    peg: 450, // approx generic grid displacement
+    peg: 450, 
     icon: Zap,
     verified: true,
     status: "Trading",
     deviceHash: "sha256:d4e5f6...",
-    oracle: "Nexus Oracle Node 2"
+    oracle: "Nexus Oracle Node 2",
+    source: "SF Grid Integration"
   },
   {
     id: "WTR-PA-TX-2025-000456",
@@ -68,7 +71,8 @@ export const MOCK_BATCHES: Batch[] = [
     verified: true,
     status: "Minted",
     deviceHash: "sha256:g7h8i9...",
-    oracle: "Nexus Oracle Node 1"
+    oracle: "Nexus Oracle Node 1",
+    source: "Austin Rain Catchment"
   },
   {
     id: "ENG-PA-NY-2025-000111",
@@ -85,7 +89,8 @@ export const MOCK_BATCHES: Batch[] = [
     verified: true,
     status: "Retired",
     deviceHash: "sha256:j0k1l2...",
-    oracle: "Nexus Oracle Node 3"
+    oracle: "Nexus Oracle Node 3",
+    source: "Atlantic Wind Project"
   }
 ];
 
