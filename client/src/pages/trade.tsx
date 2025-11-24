@@ -1,10 +1,11 @@
 import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { ArrowDownUp, ChevronDown, Search, Settings, Calendar } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import { ArrowDownUp, ChevronDown, Search, Settings, Calendar, Scale, Info } from "lucide-react";
 import { MOCK_BATCHES } from "@/lib/mockData";
+import { Badge } from "@/components/ui/badge";
 
 interface Token {
   symbol: string;
@@ -34,13 +35,19 @@ const BASE_TOKENS: Token[] = [
   { symbol: "NXS", name: "Nexus Gov", color: "bg-emerald-600 text-white", balance: "25" },
 ];
 
-const TOKENS = [...BASE_TOKENS, ...BATCH_TOKENS];
+const POOL_TOKENS: Token[] = [
+  { symbol: "B-WTR", name: "Balanced Water Pool", color: "bg-blue-600 text-white", balance: "0" },
+  { symbol: "B-ENG", name: "Balanced Energy Pool", color: "bg-amber-600 text-white", balance: "0" },
+];
+
+const TOKENS = [...BASE_TOKENS, ...POOL_TOKENS, ...BATCH_TOKENS];
 
 export default function Trade() {
   const [sellAmount, setSellAmount] = useState("");
   const [payToken, setPayToken] = useState<Token>(TOKENS[0]); // XRP
   const [receiveToken, setReceiveToken] = useState<Token>(TOKENS.find(t => t.batchId) || TOKENS[6]); 
   const [searchQuery, setSearchQuery] = useState("");
+  const [poolMode, setPoolMode] = useState(false);
   
   // Simple mock calculation
   const exchangeRate = 0.45; // mock rate
@@ -134,15 +141,62 @@ export default function Trade() {
   };
 
   return (
-    <div className="max-w-md mx-auto pt-8">
-      <div className="mb-8 text-center">
-        <h1 className="text-3xl font-display font-bold mb-2">DEX Swap</h1>
+    <div className="max-w-2xl mx-auto pt-8 space-y-8">
+      <div className="text-center space-y-2">
+        <h1 className="text-3xl font-display font-bold">DEX Swap</h1>
         <p className="text-muted-foreground">Trade Environmental Assets instantly on XRPL.</p>
       </div>
 
+      <div className="flex justify-center gap-2 mb-8">
+        <Button 
+          variant={!poolMode ? "default" : "outline"} 
+          onClick={() => setPoolMode(false)}
+          className={!poolMode ? "bg-primary text-background" : "border-white/10"}
+        >
+          Spot Market
+        </Button>
+        <Button 
+          variant={poolMode ? "default" : "outline"} 
+          onClick={() => {
+            setPoolMode(true);
+            setPayToken(TOKENS[0]); // XRP
+            setReceiveToken(POOL_TOKENS[0]); // B-WTR
+          }}
+          className={poolMode ? "bg-blue-600 text-white hover:bg-blue-700" : "border-white/10"}
+        >
+          <Scale className="w-4 h-4 mr-2" /> Balancer Pools
+        </Button>
+      </div>
+
+      {poolMode && (
+        <Card className="glass-panel bg-blue-500/5 border-blue-500/20 mb-6">
+          <CardContent className="p-6 flex items-start gap-4">
+             <div className="p-3 rounded-full bg-blue-500/20 text-blue-400">
+               <Scale className="w-6 h-6" />
+             </div>
+             <div className="space-y-2">
+               <h3 className="text-lg font-bold text-white">Balancer Protocol Active</h3>
+               <p className="text-sm text-muted-foreground">
+                 You are trading against a diversified pool of assets. 
+                 B-WTR represents a basket of top-rated water credits, automatically rebalanced.
+                 Perfect for large volume acquisitions without slippage.
+               </p>
+               <div className="flex gap-2 mt-2">
+                 <Badge variant="outline" className="bg-blue-500/10 border-blue-500/20 text-blue-400">
+                    Avg Price: 0.42 XRP
+                 </Badge>
+                 <Badge variant="outline" className="bg-blue-500/10 border-blue-500/20 text-blue-400">
+                    Deep Liquidity
+                 </Badge>
+               </div>
+             </div>
+          </CardContent>
+        </Card>
+      )}
+
       <Card className="glass-panel border-primary/10">
         <CardHeader className="flex flex-row items-center justify-between pb-2">
-          <CardTitle className="text-lg font-medium">Swap</CardTitle>
+          <CardTitle className="text-lg font-medium">{poolMode ? "Pool Swap" : "Limit Swap"}</CardTitle>
           <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-white">
             <Settings className="w-4 h-4" />
           </Button>
@@ -219,24 +273,28 @@ export default function Trade() {
             </div>
           </div>
 
-          <Button className="w-full h-12 text-lg bg-primary text-background hover:bg-primary/90 mt-4 font-bold">
-            Swap Tokens
+          <Button className={`w-full h-12 text-lg text-white font-bold mt-4 ${
+            poolMode ? "bg-blue-600 hover:bg-blue-700" : "bg-primary hover:bg-primary/90 text-black"
+          }`}>
+            {poolMode ? "Swap via Balancer Pool" : "Swap Tokens"}
           </Button>
 
         </CardContent>
       </Card>
 
-      <div className="mt-8">
-        <h3 className="text-sm font-semibold text-muted-foreground mb-4 px-1">Popular Pairs</h3>
-        <div className="grid grid-cols-2 gap-4">
-          {["XRP / WTR", "XRP / ENG", "RLUSD / WTR", "SOLO / ENG"].map((pair) => (
-            <div key={pair} className="p-3 rounded-lg border border-white/5 bg-card/30 hover:bg-white/5 cursor-pointer transition-colors flex items-center justify-between group">
-              <span className="font-mono text-sm group-hover:text-primary transition-colors">{pair}</span>
-              <span className="text-xs text-green-400">+2.4%</span>
-            </div>
-          ))}
+      {!poolMode && (
+        <div className="mt-8">
+          <h3 className="text-sm font-semibold text-muted-foreground mb-4 px-1">Popular Pairs</h3>
+          <div className="grid grid-cols-2 gap-4">
+            {["XRP / WTR", "XRP / ENG", "RLUSD / WTR", "SOLO / ENG"].map((pair) => (
+              <div key={pair} className="p-3 rounded-lg border border-white/5 bg-card/30 hover:bg-white/5 cursor-pointer transition-colors flex items-center justify-between group">
+                <span className="font-mono text-sm group-hover:text-primary transition-colors">{pair}</span>
+                <span className="text-xs text-green-400">+2.4%</span>
+              </div>
+            ))}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
