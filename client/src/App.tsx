@@ -8,6 +8,7 @@ import Mint from "@/pages/mint";
 import Trade from "@/pages/trade";
 import Retire from "@/pages/retire";
 import Explorer from "@/pages/explorer";
+import Marketplace from "@/pages/marketplace";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -15,6 +16,7 @@ function Router() {
     <Layout>
       <Switch>
         <Route path="/" component={Home} />
+        <Route path="/marketplace" component={Marketplace} />
         <Route path="/mint" component={Mint} />
         <Route path="/trade" component={Trade} />
         <Route path="/retire" component={Retire} />
