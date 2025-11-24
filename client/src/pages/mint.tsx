@@ -137,6 +137,25 @@ export default function Mint() {
                   <span className="text-muted-foreground">Calculated Output</span>
                   <span className="font-mono text-primary font-bold">1,250 {selectedType === 'WTR' ? 'L' : 'kWh'}</span>
                 </div>
+                
+                <div className="mt-4 pt-4 border-t border-white/10">
+                  <div className="flex items-start gap-3">
+                    <div className="p-2 rounded bg-emerald-500/10 text-emerald-500 mt-0.5">
+                       <Server className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <div className="text-sm font-bold text-emerald-400">Nexus Protocol Rewards</div>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        This batch initiates a <span className="text-white">12-month vesting schedule</span>. 
+                        Tradable value decreases by 1/12 monthly as assets are auto-retired.
+                      </p>
+                      <div className="mt-2 flex items-center gap-2 text-xs font-mono bg-emerald-500/5 border border-emerald-500/20 px-2 py-1 rounded w-fit">
+                        <span>Generating:</span>
+                        <span className="text-emerald-400 font-bold">~104.16 NXS / month</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
 
             </CardContent>

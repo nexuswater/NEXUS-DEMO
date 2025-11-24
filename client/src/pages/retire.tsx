@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { MOCK_BATCHES } from "@/lib/mockData";
-import { Flame, Leaf, ExternalLink, CheckCircle2 } from "lucide-react";
+import { Flame, Leaf, ExternalLink, CheckCircle2, Clock, TrendingDown, Coins } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -14,6 +14,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { Progress } from "@/components/ui/progress";
 
 export default function Retire() {
   const [retiredBatches, setRetiredBatches] = useState<string[]>([]);
@@ -22,12 +23,21 @@ export default function Retire() {
     setRetiredBatches([...retiredBatches, id]);
   };
 
+  // Mock active holding for visualization
+  const activeHolding = {
+    name: "WTR-PA-HNL-2025-000123",
+    month: 3,
+    totalMonths: 12,
+    nxsEarned: 312.5,
+    tradableFraction: "9/12"
+  };
+
   return (
     <div className="space-y-8">
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div className="space-y-2">
           <h1 className="text-4xl font-display font-bold">Retire Assets</h1>
-          <p className="text-muted-foreground">Permanently burn tokens to claim environmental offsets.</p>
+          <p className="text-muted-foreground">Manage lifecycle, burn tokens, and claim NXS rewards.</p>
         </div>
         <div className="p-4 rounded-xl bg-primary/10 border border-primary/20 flex items-center gap-4">
           <div className="p-2 rounded-full bg-primary/20 text-primary">
@@ -39,6 +49,59 @@ export default function Retire() {
           </div>
         </div>
       </div>
+
+      {/* Active Lifecycle Section */}
+      <section className="space-y-4">
+        <h2 className="text-lg font-bold flex items-center gap-2">
+          <Clock className="w-5 h-5 text-primary" /> Active Lifecycle Batches
+        </h2>
+        <Card className="glass-panel border-primary/20 bg-primary/5">
+          <CardContent className="p-6">
+            <div className="flex flex-col md:flex-row gap-6 items-center">
+              <div className="flex-1 w-full space-y-4">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <h3 className="font-bold text-lg">{activeHolding.name}</h3>
+                    <p className="text-sm text-muted-foreground">Automatic Monthly Retirement Schedule</p>
+                  </div>
+                  <div className="text-right">
+                     <div className="text-sm text-muted-foreground">Current Month</div>
+                     <div className="font-mono font-bold text-xl">{activeHolding.month} / {activeHolding.totalMonths}</div>
+                  </div>
+                </div>
+                
+                <div className="space-y-2">
+                  <div className="flex justify-between text-xs">
+                    <span className="text-muted-foreground">Lifecycle Progress</span>
+                    <span className="text-primary">25% Complete</span>
+                  </div>
+                  <Progress value={25} className="h-2 bg-black/40" />
+                </div>
+
+                <div className="grid grid-cols-3 gap-4 pt-2">
+                  <div className="p-3 rounded bg-black/20 border border-white/5">
+                    <div className="text-xs text-muted-foreground mb-1 flex items-center gap-1">
+                      <TrendingDown className="w-3 h-3" /> Tradable Value
+                    </div>
+                    <div className="font-mono font-bold">{activeHolding.tradableFraction}</div>
+                  </div>
+                  <div className="p-3 rounded bg-emerald-500/10 border border-emerald-500/20 col-span-2 flex items-center justify-between">
+                    <div>
+                      <div className="text-xs text-emerald-400 mb-1 flex items-center gap-1">
+                        <Coins className="w-3 h-3" /> NXS Generated
+                      </div>
+                      <div className="font-mono font-bold text-emerald-400">{activeHolding.nxsEarned} NXS</div>
+                    </div>
+                    <Button size="sm" className="bg-emerald-500 text-white hover:bg-emerald-600 h-8">
+                      Claim Rewards
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </section>
 
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
         {MOCK_BATCHES.filter(b => b.status !== "Retired").map((batch) => {
