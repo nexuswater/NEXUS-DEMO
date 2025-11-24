@@ -3,19 +3,30 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { ArrowDownUp, ChevronDown, Search, Settings } from "lucide-react";
+import { ArrowDownUp, ChevronDown, Search, Settings, Calendar } from "lucide-react";
+import { MOCK_BATCHES } from "@/lib/mockData";
 
 interface Token {
   symbol: string;
   name: string;
   color: string;
   balance: string;
+  batchId?: string; // Optional link to specific batch
+  retirementDate?: string;
 }
 
-const TOKENS: Token[] = [
+// Transform mock batches into tradeable tokens
+const BATCH_TOKENS: Token[] = MOCK_BATCHES.filter(b => b.status !== 'Retired').map(b => ({
+  symbol: b.type,
+  name: b.name,
+  color: b.color,
+  balance: b.amount.toString(),
+  batchId: b.id,
+  retirementDate: b.retirementDate
+}));
+
+const BASE_TOKENS: Token[] = [
   { symbol: "XRP", name: "XRP", color: "bg-white text-black", balance: "5,400" },
-  { symbol: "WTR", name: "Water Credit", color: "bg-primary text-background", balance: "0" },
-  { symbol: "ENG", name: "Energy Credit", color: "bg-amber-500 text-black", balance: "150" },
   { symbol: "FUZZY", name: "Fuzzy Token", color: "bg-purple-500 text-white", balance: "1,200,000" },
   { symbol: "PHNIX", name: "Phoenix", color: "bg-red-500 text-white", balance: "500" },
   { symbol: "RLUSD", name: "Ripple USD", color: "bg-blue-500 text-white", balance: "1,000" },
@@ -23,12 +34,14 @@ const TOKENS: Token[] = [
   { symbol: "NXS", name: "Nexus Gov", color: "bg-emerald-600 text-white", balance: "25" },
 ];
 
+const TOKENS = [...BASE_TOKENS, ...BATCH_TOKENS];
+
 export default function Trade() {
   const [sellAmount, setSellAmount] = useState("");
   const [payToken, setPayToken] = useState<Token>(TOKENS[0]); // XRP
-  const [receiveToken, setReceiveToken] = useState<Token>(TOKENS[1]); // WTR
+  const [receiveToken, setReceiveToken] = useState<Token>(TOKENS.find(t => t.batchId) || TOKENS[6]); 
   const [searchQuery, setSearchQuery] = useState("");
-
+  
   // Simple mock calculation
   const exchangeRate = 0.45; // mock rate
   const buyAmount = sellAmount ? (parseFloat(sellAmount) * exchangeRate).toFixed(4) : "";
@@ -49,12 +62,15 @@ export default function Trade() {
   }) => (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="ghost" className="flex items-center gap-2 bg-white/5 hover:bg-white/10 rounded-full px-3 py-2 h-auto border border-white/10">
-          <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold ${selected.color}`}>
+        <Button variant="ghost" className="flex items-center gap-2 bg-white/5 hover:bg-white/10 rounded-full px-3 py-2 h-auto border border-white/10 max-w-[140px]">
+          <div className={`w-6 h-6 rounded-full flex-shrink-0 flex items-center justify-center text-[10px] font-bold ${selected.color.includes('bg-') ? selected.color : 'bg-white/10 ' + selected.color}`}>
             {selected.symbol[0]}
           </div>
-          <span className="font-bold">{selected.symbol}</span>
-          <ChevronDown className="w-4 h-4 text-muted-foreground" />
+          <div className="flex flex-col items-start overflow-hidden">
+             <span className="font-bold truncate w-full text-left">{selected.symbol}</span>
+             {selected.batchId && <span className="text-[9px] text-muted-foreground truncate w-full">Batch #{selected.batchId.split('-').pop()}</span>}
+          </div>
+          <ChevronDown className="w-4 h-4 text-muted-foreground flex-shrink-0" />
         </Button>
       </DialogTrigger>
       <DialogContent className="bg-card border-white/10 sm:max-w-[425px]">
@@ -74,23 +90,32 @@ export default function Trade() {
           <div className="space-y-2 max-h-[300px] overflow-y-auto pr-2">
             {filteredTokens.map((token) => (
               <div 
-                key={token.symbol}
+                key={token.batchId || token.symbol + token.name}
                 className={`flex items-center justify-between p-3 rounded-lg cursor-pointer hover:bg-white/5 transition-colors ${
-                  token.symbol === selected.symbol ? "bg-white/10" : ""
-                } ${token.symbol === otherToken.symbol ? "opacity-50 pointer-events-none" : ""}`}
+                  (token.batchId ? token.batchId === selected.batchId : token.symbol === selected.symbol && !selected.batchId) 
+                    ? "bg-white/10" 
+                    : ""
+                } ${(token.batchId ? token.batchId === otherToken.batchId : token.symbol === otherToken.symbol && !otherToken.batchId) ? "opacity-50 pointer-events-none" : ""}`}
                 onClick={() => {
                   onSelect(token);
-                  // Close dialog hack (in a real app use controlled dialog)
                   document.dispatchEvent(new KeyboardEvent('keydown', {'key': 'Escape'}));
                 }}
               >
                 <div className="flex items-center gap-3">
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${token.color}`}>
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${token.color.includes('bg-') ? token.color : 'bg-white/10 ' + token.color}`}>
                     {token.symbol[0]}
                   </div>
                   <div className="flex flex-col text-left">
-                    <span className="font-bold">{token.symbol}</span>
+                    <span className="font-bold flex items-center gap-2">
+                      {token.symbol}
+                      {token.batchId && <span className="text-[10px] px-1.5 py-0.5 rounded bg-white/10 font-mono text-muted-foreground">Batch</span>}
+                    </span>
                     <span className="text-xs text-muted-foreground">{token.name}</span>
+                    {token.retirementDate && (
+                      <span className="text-[10px] text-muted-foreground flex items-center gap-1 mt-0.5">
+                        <Calendar className="w-3 h-3" /> Retires: {token.retirementDate}
+                      </span>
+                    )}
                   </div>
                 </div>
                 <span className="font-mono text-sm text-muted-foreground">{token.balance}</span>

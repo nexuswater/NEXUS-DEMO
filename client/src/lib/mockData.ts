@@ -16,7 +16,9 @@ export interface Batch {
   status: "Minted" | "Retired" | "Trading";
   deviceHash: string;
   oracle: string;
-  source: string; // New field for grouping
+  source: string;
+  retirementDate: string; // ISO date
+  color: string; // Tailwind color class
 }
 
 export const MOCK_BATCHES: Batch[] = [
@@ -36,7 +38,9 @@ export const MOCK_BATCHES: Batch[] = [
     status: "Minted",
     deviceHash: "sha256:a1b2c3...",
     oracle: "Nexus Oracle Node 1",
-    source: "Honolulu Municipal Water"
+    source: "Honolulu Municipal Water",
+    retirementDate: "2026-11-15",
+    color: "text-cyan-400 bg-cyan-500/20"
   },
   {
     id: "ENG-PA-SF-2025-000987",
@@ -54,7 +58,9 @@ export const MOCK_BATCHES: Batch[] = [
     status: "Trading",
     deviceHash: "sha256:d4e5f6...",
     oracle: "Nexus Oracle Node 2",
-    source: "SF Grid Integration"
+    source: "SF Grid Integration",
+    retirementDate: "2026-10-01",
+    color: "text-amber-400 bg-amber-500/20"
   },
   {
     id: "WTR-PA-TX-2025-000456",
@@ -72,7 +78,9 @@ export const MOCK_BATCHES: Batch[] = [
     status: "Minted",
     deviceHash: "sha256:g7h8i9...",
     oracle: "Nexus Oracle Node 1",
-    source: "Austin Rain Catchment"
+    source: "Austin Rain Catchment",
+    retirementDate: "2026-09-20",
+    color: "text-blue-400 bg-blue-500/20"
   },
   {
     id: "ENG-PA-NY-2025-000111",
@@ -90,7 +98,9 @@ export const MOCK_BATCHES: Batch[] = [
     status: "Retired",
     deviceHash: "sha256:j0k1l2...",
     oracle: "Nexus Oracle Node 3",
-    source: "Atlantic Wind Project"
+    source: "Atlantic Wind Project",
+    retirementDate: "2026-12-31",
+    color: "text-emerald-400 bg-emerald-500/20"
   }
 ];
 

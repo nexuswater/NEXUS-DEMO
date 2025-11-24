@@ -73,9 +73,14 @@ export default function Retire() {
               <div className={`p-2 rounded-lg ${batch.type === 'WTR' ? 'bg-blue-500/20 text-blue-400' : 'bg-amber-500/20 text-amber-400'}`}>
                 <batch.icon className="w-6 h-6" />
               </div>
-              <Badge variant="outline" className="font-mono bg-white/5 border-white/10">
-                {batch.vintage}
-              </Badge>
+              <div className="text-right">
+                <Badge variant="outline" className="font-mono bg-white/5 border-white/10 mb-1">
+                  {batch.vintage}
+                </Badge>
+                <div className="text-[10px] text-muted-foreground flex items-center gap-1 justify-end">
+                  <Clock className="w-3 h-3" /> Retires: {batch.retirementDate}
+                </div>
+              </div>
             </div>
             
             <div>
