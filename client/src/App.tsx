@@ -18,7 +18,6 @@ function Router() {
         <Route path="/" component={Home} />
         <Route path="/marketplace" component={Marketplace} />
         <Route path="/mint" component={Mint} />
-        <Route path="/trade" component={Trade} />
         <Route path="/retire" component={Retire} />
         <Route path="/explorer" component={Explorer} />
         <Route component={NotFound} />

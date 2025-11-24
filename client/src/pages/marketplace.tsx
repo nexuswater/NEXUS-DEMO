@@ -3,13 +3,33 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
-import { Search, Filter, MapPin, Calendar, Droplets, Zap, ShoppingCart, ArrowUpRight, Factory } from "lucide-react";
+import { Search, Filter, MapPin, Calendar, Droplets, Zap, ArrowRightLeft, ArrowUpRight, Factory, Send } from "lucide-react";
 import { MOCK_BATCHES } from "@/lib/mockData";
 import { Link } from "wouter";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogDescription } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { useToast } from "@/hooks/use-toast";
 
 export default function Marketplace() {
+  const { toast } = useToast();
   const [search, setSearch] = useState("");
   const [selectedType, setSelectedType] = useState<"ALL" | "WTR" | "ENG">("ALL");
+  const [transferAmount, setTransferAmount] = useState("");
+  const [recipientAddress, setRecipientAddress] = useState("");
+  const [isTransferring, setIsTransferring] = useState(false);
+
+  const handleTransfer = () => {
+    setIsTransferring(true);
+    setTimeout(() => {
+      setIsTransferring(false);
+      setTransferAmount("");
+      setRecipientAddress("");
+      toast({
+        title: "Transfer Successful",
+        description: `Assets successfully sent to ${recipientAddress.slice(0,8)}...${recipientAddress.slice(-4)}`,
+      });
+    }, 1500);
+  };
 
   const filteredBatches = MOCK_BATCHES.filter(b => {
     const matchesSearch = b.name.toLowerCase().includes(search.toLowerCase()) || 
@@ -24,7 +44,7 @@ export default function Marketplace() {
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div className="space-y-2">
           <h1 className="text-4xl font-display font-bold">Marketplace</h1>
-          <p className="text-muted-foreground">Discover, buy, and trade verified environmental assets.</p>
+          <p className="text-muted-foreground">Manage and transfer verified environmental assets.</p>
         </div>
         <div className="flex gap-2">
           <Button 
@@ -87,11 +107,6 @@ export default function Marketplace() {
                 <div className="text-2xl font-bold font-mono">
                    {batch.amount.toLocaleString()} <span className="text-sm text-muted-foreground font-sans">{batch.unit}</span>
                 </div>
-                {/* Mock Price */}
-                <div className="text-right">
-                   <div className="text-xs text-muted-foreground">Price</div>
-                   <div className="font-bold text-white">{(Math.random() * 5 + 0.5).toFixed(2)} XRP</div>
-                </div>
               </div>
             </div>
 
@@ -118,11 +133,49 @@ export default function Marketplace() {
             </CardContent>
 
             <CardFooter className="p-4 bg-white/5 border-t border-white/5 flex gap-3">
-              <Link href="/trade" className="flex-1">
-                <Button className="w-full bg-white text-black hover:bg-white/90 font-bold">
-                  <ShoppingCart className="w-4 h-4 mr-2" /> Buy Now
-                </Button>
-              </Link>
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button className="w-full bg-white text-black hover:bg-white/90 font-bold flex-1">
+                    <Send className="w-4 h-4 mr-2" /> Transfer
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="bg-card border-white/10">
+                  <DialogHeader>
+                    <DialogTitle>Transfer Assets</DialogTitle>
+                    <DialogDescription>Send {batch.name} to another wallet.</DialogDescription>
+                  </DialogHeader>
+                  <div className="space-y-4 py-4">
+                    <div className="space-y-2">
+                      <Label>Recipient Address (XRPL)</Label>
+                      <Input 
+                        placeholder="r..." 
+                        value={recipientAddress}
+                        onChange={(e) => setRecipientAddress(e.target.value)}
+                        className="bg-black/20 border-white/10"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Amount ({batch.unit})</Label>
+                      <Input 
+                        type="number" 
+                        placeholder="0.00" 
+                        value={transferAmount}
+                        onChange={(e) => setTransferAmount(e.target.value)}
+                        className="bg-black/20 border-white/10"
+                      />
+                      <div className="text-xs text-muted-foreground text-right">
+                        Available: {batch.amount}
+                      </div>
+                    </div>
+                  </div>
+                  <DialogFooter>
+                    <Button onClick={handleTransfer} disabled={isTransferring || !recipientAddress || !transferAmount} className="w-full bg-primary text-background">
+                      {isTransferring ? "Sending..." : "Confirm Transfer"}
+                    </Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+
               <Link href={`/explorer?search=${batch.id}`} className="flex-none">
                 <Button variant="ghost" size="icon" className="border border-white/10 hover:bg-white/10">
                   <ArrowUpRight className="w-4 h-4" />

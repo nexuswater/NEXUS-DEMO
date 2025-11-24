@@ -23,7 +23,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     { href: "/", icon: LayoutDashboard, label: "Dashboard" },
     { href: "/marketplace", icon: ShoppingCart, label: "Marketplace" },
     { href: "/mint", icon: Droplets, label: "Mint" },
-    { href: "/trade", icon: ArrowRightLeft, label: "DEX Swap" },
     { href: "/retire", icon: Flame, label: "Retire" },
     { href: "/explorer", icon: Search, label: "Explorer" },
   ];
