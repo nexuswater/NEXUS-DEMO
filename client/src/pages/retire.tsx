@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { MOCK_BATCHES } from "@/lib/mockData";
-import { Flame, Leaf, ExternalLink, CheckCircle2, Clock, TrendingDown, Coins } from "lucide-react";
+import { Flame, Leaf, ExternalLink, CheckCircle2, Clock, TrendingDown, Coins, Send, Wallet } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -14,14 +14,32 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import offsetNftImage from "@assets/generated_images/holographic_3d_crystal_badge_representing_a_carbon_offset_credit_on_blockchain.png";
 
 export default function Retire() {
   const [retiredBatches, setRetiredBatches] = useState<string[]>([]);
+  const [transferAddress, setTransferAddress] = useState("");
 
   const handleRetire = (id: string) => {
     setRetiredBatches([...retiredBatches, id]);
+  };
+
+  const handleTransfer = (id: string) => {
+    // Mock transfer logic
+    console.log(`Transferring batch ${id} to ${transferAddress}`);
+    setTransferAddress("");
   };
 
   // Mock active holding for visualization
@@ -139,12 +157,62 @@ export default function Retire() {
                     </div>
                   </div>
 
-                  <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                      <Button className="w-full bg-destructive/10 text-destructive hover:bg-destructive/20 border border-destructive/20 mt-4 group-hover:bg-destructive group-hover:text-white transition-all">
-                        <Flame className="w-4 h-4 mr-2" /> Retire / Burn
-                      </Button>
-                    </AlertDialogTrigger>
+                  <div className="grid grid-cols-2 gap-2 mt-4">
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button variant="outline" className="border-white/10 hover:bg-white/10 hover:text-primary">
+                          <Send className="w-4 h-4 mr-2" /> Transfer
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="bg-card border-white/10">
+                        <DialogHeader>
+                          <DialogTitle>Transfer Asset</DialogTitle>
+                          <DialogDescription>
+                            Send <strong>{batch.name}</strong> to another XRPL wallet.
+                            The recipient will gain the ability to retire this asset for rewards.
+                          </DialogDescription>
+                        </DialogHeader>
+                        <div className="space-y-4 py-4">
+                          <div className="space-y-2">
+                            <Label>Recipient Address</Label>
+                            <div className="relative">
+                              <Wallet className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                              <Input 
+                                placeholder="r..." 
+                                className="pl-10 bg-black/20 border-white/10 font-mono"
+                                value={transferAddress}
+                                onChange={(e) => setTransferAddress(e.target.value)}
+                              />
+                            </div>
+                          </div>
+                          <div className="space-y-2">
+                            <Label>Amount to Transfer</Label>
+                            <div className="flex items-center gap-3">
+                              <Input 
+                                defaultValue={batch.amount}
+                                className="bg-black/20 border-white/10 font-mono"
+                              />
+                              <span className="text-sm font-bold text-muted-foreground">{batch.unit}</span>
+                            </div>
+                          </div>
+                        </div>
+                        <DialogFooter>
+                          <Button 
+                            className="bg-primary text-background hover:bg-primary/90 w-full"
+                            onClick={() => handleTransfer(batch.id)}
+                          >
+                            Sign & Send Transaction
+                          </Button>
+                        </DialogFooter>
+                      </DialogContent>
+                    </Dialog>
+
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button className="bg-destructive/10 text-destructive hover:bg-destructive/20 border border-destructive/20 group-hover:bg-destructive group-hover:text-white transition-all">
+                          <Flame className="w-4 h-4 mr-2" /> Retire
+                        </Button>
+                      </AlertDialogTrigger>
                     <AlertDialogContent className="bg-card border-white/10 sm:max-w-[500px]">
                       <AlertDialogHeader>
                         <AlertDialogTitle>Confirm Retirement</AlertDialogTitle>
