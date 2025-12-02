@@ -1,4 +1,5 @@
 import { useState } from "react";
+import TokenOfferModal from "@/components/modals/tokenOfferModal";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -17,6 +18,8 @@ export default function Marketplace() {
   const [transferAmount, setTransferAmount] = useState("");
   const [recipientAddress, setRecipientAddress] = useState("");
   const [isTransferring, setIsTransferring] = useState(false);
+  const [showOfferModal, setShowOfferModal] = useState(false);
+  const [offerAsset, setOfferAsset] = useState<any>(null);
 
   const handleTransfer = () => {
     setIsTransferring(true);
@@ -44,7 +47,11 @@ export default function Marketplace() {
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div className="space-y-2">
           <h1 className="text-4xl font-display font-bold">Marketplace</h1>
-          <p className="text-muted-foreground">Manage and transfer verified environmental assets.</p>
+          <p className="text-muted-foreground">
+            Welcome to the Nexus Water Marketplace. Here you can discover, exchange, and list verified environmental assets.<br />
+            <span className="text-primary font-semibold">To create a new offer, click one of the offer cards below or use the Transfer button on any asset.</span><br />
+            All exchanges are secured by token escrows for your safety—either the whole exchange completes, or nothing happens.
+          </p>
         </div>
         <div className="flex gap-2">
           <Button 
@@ -87,8 +94,52 @@ export default function Marketplace() {
         </div>
       </div>
 
-      {/* Listings Grid */}
+      {/* Offer Cards */}
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {/* Offer Cards: Only $WTR and $ENG supported */}
+        {/* Offer Card for $WTR */}
+        <div className="glass-panel overflow-hidden group flex flex-col hover:border-primary/30 transition-all duration-300">
+          <div className="relative h-28 bg-black/40 border-b border-white/5 p-6 flex flex-col justify-between">
+            <div className="flex items-center gap-2 mb-2">
+              <span className="bg-primary/20 text-primary font-bold px-2 py-1 rounded text-xs flex items-center gap-1">
+                💧 WTR Offer
+              </span>
+            </div>
+            <div className="font-bold text-lg mb-1 text-left">Offer to Buy $WTR MPTs</div>
+            <div className="text-sm text-muted-foreground text-left">List an offer to buy $WTR MPTs. Any asset can be offered and will be held in escrow.</div>
+          </div>
+          <div className="flex-1" />
+          <div className="p-4 bg-white/5 border-t border-white/5 flex gap-3">
+            <button
+              className="w-full bg-primary text-background font-bold rounded px-4 py-2 hover:bg-primary/90 transition flex items-center justify-center gap-2"
+              onClick={() => { setOfferAsset({ type: 'WTR', name: '$WTR Water Credit', unit: 'L' }); setShowOfferModal(true); }}
+            >
+              <span>Create Offer</span>
+            </button>
+          </div>
+        </div>
+        {/* Offer Card for $ENG */}
+        <div className="glass-panel overflow-hidden group flex flex-col hover:border-amber-400/30 transition-all duration-300">
+          <div className="relative h-28 bg-black/40 border-b border-white/5 p-6 flex flex-col justify-between">
+            <div className="flex items-center gap-2 mb-2">
+              <span className="bg-amber-400/20 text-amber-400 font-bold px-2 py-1 rounded text-xs flex items-center gap-1">
+                ⚡ ENG Offer
+              </span>
+            </div>
+            <div className="font-bold text-lg mb-1 text-left">Offer to Buy $ENG MPTs</div>
+            <div className="text-sm text-muted-foreground text-left">List an offer to buy $ENG MPTs. Any asset can be offered and will be held in escrow.</div>
+          </div>
+          <div className="flex-1" />
+          <div className="p-4 bg-white/5 border-t border-white/5 flex gap-3">
+            <button
+              className="w-full bg-amber-400 text-black font-bold rounded px-4 py-2 hover:bg-amber-300 transition flex items-center justify-center gap-2"
+              onClick={() => { setOfferAsset({ type: 'ENG', name: '$ENG Energy Credit', unit: 'kWh' }); setShowOfferModal(true); }}
+            >
+              <span>Create Offer</span>
+            </button>
+          </div>
+        </div>
+        {/* Existing Exchange Listings */}
         {filteredBatches.map((batch) => (
           <Card key={batch.id} className="glass-panel overflow-hidden group flex flex-col hover:border-primary/30 transition-all duration-300">
             <div className="relative h-32 bg-black/40 border-b border-white/5 p-6 flex flex-col justify-between">
@@ -139,6 +190,12 @@ export default function Marketplace() {
                     <Send className="w-4 h-4 mr-2" /> Transfer
                   </Button>
                 </DialogTrigger>
+              {/* Token Offer Modal (global, not per card) */}
+              <TokenOfferModal
+                open={showOfferModal}
+                onOpenChange={setShowOfferModal}
+                asset={offerAsset}
+              />
                 <DialogContent className="bg-card border-white/10">
                   <DialogHeader>
                     <DialogTitle>Transfer Assets</DialogTitle>

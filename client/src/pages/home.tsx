@@ -37,7 +37,7 @@ export default function Home() {
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
               </span>
-              LIVE ON XRPL MAINNET
+              LIVE ON XRPL DEVNET
             </div>
             <h1 className="text-5xl md:text-7xl font-display font-bold leading-tight mb-4">
               Real World Assets.<br/>

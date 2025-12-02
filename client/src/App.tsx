@@ -11,17 +11,20 @@ import Explorer from "@/pages/explorer";
 import Marketplace from "@/pages/marketplace";
 import NotFound from "@/pages/not-found";
 
+
 function Router() {
   return (
     <Layout>
-      <Switch>
-        <Route path="/" component={Home} />
-        <Route path="/marketplace" component={Marketplace} />
-        <Route path="/mint" component={Mint} />
-        <Route path="/retire" component={Retire} />
-        <Route path="/explorer" component={Explorer} />
-        <Route component={NotFound} />
-      </Switch>
+      {({ xrplAddress, isConnected }) => (
+        <Switch>
+          <Route path="/" component={Home} />
+          <Route path="/explorer" component={Explorer} />
+          <Route path="/marketplace" component={Marketplace} />
+          <Route path="/mint" component={() => <Mint xrplAddress={xrplAddress} isConnected={isConnected} />} />
+          <Route path="/retire" component={Retire} />
+          <Route component={NotFound} />
+        </Switch>
+      )}
     </Layout>
   );
 }
